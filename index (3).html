@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANANTA OFFICIAL STORE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0; /* Gray background */
+            color: #333;
+        }
+        header {
+            background-color: #fff;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        header img {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+        }
+        header h1 {
+            display: inline;
+            margin-left: 10px;
+        }
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+        nav button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        nav button.active {
+            background-color: #555;
+        }
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .banner {
+            width: 100%;
+            height: 300px;
+            background-image: url('https://picsum.photos/1200/300?random=1'); /* Placeholder banner */
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 20px;
+        }
+        .description {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .product {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            width: calc(33% - 20px);
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .product img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .product h3 {
+            margin: 10px 0;
+        }
+        .product p {
+            margin: 5px 0;
+        }
+        .rating {
+            color: #ffcc00;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .cart {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .checkout-btn {
+            background-color: #007bff;
+            margin-top: 20px;
+        }
+        .checkout-btn:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 768px) {
+            .product {
+                width: calc(50% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://picsum.photos/50/50?random=logo" alt="Logo"> <!-- Placeholder logo -->
+        <h1>ANANTA OFFICIAL STORE</h1>
+    </header>
+    <nav>
+        <button id="home-tab" class="active">Home</button>
+        <button id="products-tab">Produk</button>
+        <button id="cart-tab">Checkout/Keranjang</button>
+    </nav>
+    <div class="content">
+        <div id="home-content">
+            <div class="banner"></div>
+            <div class="description">
+                <p>Selamat datang di ANANTA OFFICIAL STORE! Kami menawarkan berbagai produk fashion berkualitas tinggi dengan harga terjangkau. Temukan koleksi terbaru kami dan belanja dengan mudah.</p>
+            </div>
+        </div>
+        <div id="products-content" style="display: none;">
+            <h2>Produk Kami</h2>
+            <div class="products" id="products-list"></div>
+        </div>
+        <div id="cart-content" style="display: none;">
+            <h2>Keranjang Belanja</h2>
+            <div class="cart" id="cart-list">
+                <p>Keranjang kosong. Tambahkan produk dari halaman Produk.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data produk contoh (ganti dengan data asli)
+        const products = [
+            { id: 1, name: 'Kaos Polos Hitam', image: 'https://picsum.photos/300/200?random=1', price: 50000, size: 'M', rating: 4.5 },
+            { id: 2, name: 'Celana Jeans Biru', image: 'https://picsum.photos/300/200?random=2', price: 150000, size: 'L', rating: 4.8 },
+            { id: 3, name: 'Sepatu Sneakers Putih', image: 'https://picsum.photos/300/200?random=3', price: 200000, size: '42', rating: 4.2 },
+            { id: 4, name: 'Jaket Kulit Coklat', image: 'https://picsum.photos/300/200?random=4', price: 300000, size: 'XL', rating: 4.7 },
+            { id: 5, name: 'Topi Baseball', image: 'https://picsum.photos/300/200?random=5', price: 75000, size: 'One Size', rating: 4.0 },
+            { id: 6, name: 'Tas Ransel Hitam', image: 'https://picsum.photos/300/200?random=6', price: 120000, size: 'Medium', rating: 4.6 }
+        ];
+
+        let cart = [];
+
+        // Fungsi untuk menampilkan produk
+        function displayProducts() {
+            const productsList = document.getElementById('products-list');
+            productsList.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>Harga: Rp ${product.price.toLocaleString()}</p>
+                    <p>Ukuran: ${product.size}</p>
+                    <p class="rating">Rating: ${product.rating} ★</p>
+                    <button onclick="addToCart(${product.id})">Tambah ke Keranjang</button>
+                `;
+                productsList.appendChild(productDiv);
+            });
+        }
+
+        // Fungsi untuk menambah ke keranjang
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            displayCart();
+            alert(`${product.name} ditambahkan ke keranjang!`);
+        }
+
+        // Fungsi untuk menampilkan keranjang
+        function displayCart() {
+            const cartList = document.getElementById('cart-list');
+            if (cart.length === 0) {
+                cartList.innerHTML = '<p>Keranjang kosong. Tambahkan produk dari halaman Produk.</p>';
+                return;
+            }
+            cartList.innerHTML = '';
+            cart.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div>
+                        <h4>${item.name}</h4>
+                        <p>Harga: Rp ${item.price.toLocaleString()}</p>
+                        <p>Ukuran: ${item.size}</p>
+                        <p class="rating">Rating: ${item.rating} ★</p>
+                    </div>
+                `;
+                cartList.appendChild(itemDiv);
+            });
+            const checkoutBtn = document.createElement('button');
+            checkoutBtn.className = 'checkout-btn';
+            checkoutBtn.textContent = 'Checkout via WhatsApp';
+            checkoutBtn.onclick = () => {
+                const message = cart.map(item => `${item.name} (Rp ${item.price.toLocaleString()}, Size: ${item.size})`).join('\n');
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                const whatsappUrl = `https://wa.me/6285356866654?text=Pesanan:%0A${encodeURIComponent(message)}%0ATotal: Rp ${total.toLocaleString()}`;
+                window.open(whatsappUrl, '_blank');
+            };
+            cartList.appendChild(checkoutBtn);
+        }
+
+        // Navigasi tab
+        document.getElementById('home-tab').addEventListener('click', () => {
+            showTab('home');
+        });
+        document.getElementById('products-tab').addEventListener('click', () => {
+            showTab('products');
+            displayProducts();
+        });
+        document.getElementById('cart-tab').addEventListener('click', () => {
+            showTab('cart');
+            displayCart();
+        });
+
+        function showTab(tab) {
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            document.querySelectorAll('.content > div').forEach(div => div.style.display = 'none');
+            document.getElementById(`${tab}-content`).style.display = 'block';
+        }
+
+        // Inisialisasi
+        displayProducts();
+    </script>
+</body>
+</html>
